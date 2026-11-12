@@ -1,0 +1,1 @@
+ALTER TABLE timetable_slot ADD COLUMN no_homework TINYINT(1) NOT NULL DEFAULT 0;

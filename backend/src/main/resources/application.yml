@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: study-helper
+  datasource:
+    url: jdbc:mysql://localhost:3306/study_helper?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: study
+    password: study123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+server:
+  port: 8080
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

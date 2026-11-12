@@ -1,0 +1,10 @@
+node_modules/
+dist/
+target/
+data/
+*.class
+.DS_Store
+.idea/
+*.iml
+.env
+.tools/
