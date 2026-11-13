@@ -1,3 +1,5 @@
+# 生产部署编排：MySQL + Spring Boot 后端 + nginx 前端
+# 用法: docker compose up -d --build
 services:
   mysql:
     image: mysql:8.0
@@ -7,11 +9,36 @@ services:
       MYSQL_DATABASE: study_helper
       MYSQL_USER: study
       MYSQL_PASSWORD: study123
-    ports:
-      - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot123"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    build: ./backend
+    container_name: study-helper-backend
+    environment:
+      # 容器内通过服务名 mysql 连库（覆盖 application.yml 的 localhost）
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/study_helper?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+      SPRING_DATASOURCE_USERNAME: study
+      SPRING_DATASOURCE_PASSWORD: study123
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8080:8080"   # 后端 API 与 Swagger（/swagger-ui.html），可按需关闭对外暴露
+
+  frontend:
+    build: ./frontend
+    container_name: study-helper-frontend
+    depends_on:
+      - backend
+    ports:
+      - "80:80"       # 应用入口：http://服务器IP/
 
 volumes:
   mysql-data:
